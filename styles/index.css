@@ -1,0 +1,15 @@
+.app {
+  background-color: darkblue;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+}
+
+#play-btn {
+  background-color: red;
+  margin: auto auto;
+  width: 50%;
+  height: 200px;
+  font-size: 60px;
+  font-weight: 900;
+}
