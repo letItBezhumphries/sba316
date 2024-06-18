@@ -1,15 +1,41 @@
-.app {
+:root {
+  --page-content-width: 92%;
+  --jet: rgba(51, 51, 51, 1);
+  --davys-gray: rgba(78, 78, 78, 1);
+  --battleship-gray: rgba(156, 156, 156, 1);
+  --silver: rgba(167, 167, 167, 1);
+  --battleship-gray-2: rgba(134, 134, 134, 1);
+}
+
+*,
+html,
+body {
+  margin: 0 0;
+  padding: 0 0;
+  box-sizing: border-box;
+}
+
+ul {
+  list-style: none;
+}
+
+body {
+  background-color: black;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+#app {
   background-color: darkblue;
   width: 100vw;
   height: 100vh;
   display: flex;
 }
 
-#play-btn {
+.play-btn {
   background-color: red;
-  margin: auto auto;
-  width: 50%;
-  height: 200px;
-  font-size: 60px;
+  font-size: 40px;
   font-weight: 900;
 }
