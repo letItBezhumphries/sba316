@@ -34,7 +34,7 @@ body {
 }
 
 .play-btn {
-  height: 50%;
+  height: 40%;
   width: 20%;
   font-size: 30px;
   font-weight: 900;
@@ -105,6 +105,14 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.form-container {
+  width: 90%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border: 0.5px solid aqua;
 }
 
 .signin-heading {
@@ -181,4 +189,24 @@ body {
   margin-top: 30px;
   border: 0.5px solid aqua;
   background-color: black;
+}
+
+.see-scores-btn {
+  color: aqua;
+  /* font-size: 14px; */
+  font-size: 30px;
+  height: 40%;
+  width: 45%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: black;
+  border: 0.5px solid aqua;
+  margin-left: 50px;
+  padding: 10px 20px;
+}
+
+.see-scores-btn:hover {
+  background-color: aqua;
+  color: black;
 }

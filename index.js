@@ -1,15 +1,11 @@
 /**
  *
  */
-function createFormFragment() {
+function createFormFragment(gameState) {
   const fragment = document.createDocumentFragment();
-  const formContainer = fragment.appendChild(document.createElement('div'));
-  formContainer.style.width = '90%';
-  formContainer.style.height = '100%';
-  formContainer.style.display = 'flex';
-  formContainer.style.flexDirection = 'column';
-  formContainer.style.border = '.5px solid aqua';
 
+  const formContainer = document.createElement('div');
+  formContainer.className = 'form-container';
   const heading = document.createElement('h3');
   heading.textContent = 'Sign in to track your score';
   heading.className = 'signin-heading';
@@ -19,15 +15,16 @@ function createFormFragment() {
 
   const usernameInputWrapper = document.createElement('div');
   usernameInputWrapper.className = 'form-input-wrapper';
-  usernameInputWrapper.innerHTML = `<input type="text" name="username" id="name" required /><label for="username">Username</label>`;
+  usernameInputWrapper.innerHTML = `<input type="text" name="username" title="username must be at least 8 character in length" id="usernm" minLength="8" required=true autocomplete=true/><label for="usernm">Username</label>`;
 
   const passwordInputWrapper = document.createElement('div');
   passwordInputWrapper.className = 'form-input-wrapper';
-  passwordInputWrapper.innerHTML = `<input type="password" name="password" id="password" required /><label for="password">Password</label>`;
+  passwordInputWrapper.innerHTML = `<input type="password" title="password must have at least 8 characters with at least 1 capitalized character and 1 special character" name="password" id="passwd" pattern="^(?=.{8,})(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$" required=true autocomplete=true /><label for="passwd">Password</label>`;
 
-  const submitBtn = document.createElement('input');
+  const submitBtn = document.createElement('button');
   submitBtn.setAttribute('type', 'submit');
   submitBtn.className = 'signin-submit-btn';
+  submitBtn.textContent = 'Submit';
 
   submitBtn.addEventListener('mouseover', (e) => {
     submitBtn.style.backgroundColor = 'aqua';
@@ -41,6 +38,33 @@ function createFormFragment() {
 
   submitBtn.addEventListener('click', (e) => {
     e.preventDefault();
+    // grab the input with id of username
+    const usernameInput = document.querySelector('#usernm');
+    const passwordInput = document.querySelector('#passwd');
+    const loginBtn = document.querySelector('.login-btn');
+    const formEl = e.target.parentNode;
+    const formContainer = formEl.parentNode;
+    const app = formContainer.parentNode;
+    const navEl = app.previousElementSibling;
+    console.log('navEl:', navEl);
+
+    // as long as the usernameInput.value is 8 chars long
+    if (usernameInput.value.length >= 3 && passwordInput.value.length >= 8) {
+      gameState.username = usernameInput.value;
+      gameState.password = passwordInput.value;
+
+      // create a new button to replace the login-btn
+      const seeScoresBtn = document.createElement('button');
+      seeScoresBtn.className = 'see-scores-btn';
+      seeScoresBtn.innerHTML = `<span>See ${gameState.username}'s scores</span>`;
+      navEl.replaceChild(seeScoresBtn, loginBtn);
+
+      // loginBtn.setAttribute('value', `${usernameInput.value} game scores`);
+      // remove the fragment from the dom
+      app.removeChild(formContainer);
+    } else {
+      throw Error('You did not supply a valid username or password');
+    }
   });
 
   formEl.appendChild(usernameInputWrapper);
@@ -49,6 +73,7 @@ function createFormFragment() {
   formEl.appendChild(submitBtn);
   formContainer.appendChild(heading);
   formContainer.appendChild(formEl);
+  fragment.appendChild(formContainer);
   return fragment;
 }
 
@@ -282,6 +307,8 @@ function getPercentage(num) {
 }
 
 const defaultGameStatus = {
+  username: '',
+  password: '',
   gameId: 0,
   length: 8,
   // mineCount: 10, //dependant upon settings
@@ -315,28 +342,51 @@ navElem.style.alignItems = 'center';
 
 /* Heading styling */
 const headingElem = document.querySelector('nav h2');
+headingElem.innerHTML = `<span>Mines</span><span>weeper</span>`;
 headingElem.style.height = '100%';
 headingElem.style.marginRight = '30px';
 headingElem.style.width = '40%';
 headingElem.style.display = 'flex';
+headingElem.style.fontSize = '30px';
+headingElem.style.letterSpacing = '1.8px';
 headingElem.style.alignItems = 'center';
+headingElem.style.textDecoration = 'underline';
+const headingEnd = headingElem.lastChild;
+headingEnd.style.letterSpacing = '8.8px';
 
 /* Play button */
-const playBtn = document.querySelector('.play-btn');
+const playBtn = document.createElement('input');
+playBtn.className = 'play-btn';
+playBtn.setAttribute('type', 'button');
+playBtn.setAttribute('value', 'Play');
+playBtn.addEventListener(
+  'click',
+  (e) => {
+    renderGameboard();
+  },
+  { once: true }
+);
 
 // create a function that will change the elements display property to none
 
+/** login button */
 const loginBtn = document.createElement('input');
 loginBtn.setAttribute('type', 'button');
 loginBtn.setAttribute('value', 'Sign in');
 loginBtn.style.height = '50%';
 loginBtn.style.width = '20%';
 loginBtn.className = 'login-btn';
-loginBtn.addEventListener('click', (e) => {
-  let loginForm = createFormFragment();
-  appElem.appendChild(loginForm);
-});
+loginBtn.addEventListener(
+  'click',
+  (e) => {
+    let loginForm = createFormFragment(defaultGameStatus);
+    appElem.appendChild(loginForm);
+  },
+  { once: true }
+);
 
+/** adding both button to the nav  **/
+navElem.appendChild(playBtn);
 navElem.appendChild(loginBtn);
 
 /* App styling */
@@ -387,11 +437,15 @@ function renderGameboard() {
       cell.className = 'square';
       cell.style.width = `${getPercentage(1 / defaultGameStatus.length)}`;
 
-      cell.addEventListener('click', (e) => {
-        e.preventDefault();
-        cell.classList.toggle('visible');
-        revealSquare(i, j, board);
-      });
+      cell.addEventListener(
+        'click',
+        (e) => {
+          e.preventDefault();
+          cell.classList.toggle('visible');
+          revealSquare(i, j, board);
+        },
+        { once: true }
+      );
 
       // grab the matching square
       const square = board[i][j];
@@ -400,18 +454,25 @@ function renderGameboard() {
         let mineElem = document.createElement('div');
         mineElem.className = 'mine';
 
-        mineElem.addEventListener('dblclick', (e) => {
-          // make sure the square has an isRevealed property of false
-          // and an isMine property of true
-          if (board[i][j].isMine === true && board[i][j].isRevealed === false) {
-            let parent = e.target.parentNode;
-            parent.classList.toggle('visible');
-            e.target.classList.toggle('mine');
-            e.target.classList.add('flag');
-            board[i][j].isFlagged = true;
-            // adjust score for mine flagged
-          }
-        });
+        mineElem.addEventListener(
+          'dblclick',
+          (e) => {
+            // make sure the square has an isRevealed property of false
+            // and an isMine property of true
+            if (
+              board[i][j].isMine === true &&
+              board[i][j].isRevealed === false
+            ) {
+              let parent = e.target.parentNode;
+              parent.classList.toggle('visible');
+              e.target.classList.toggle('mine');
+              e.target.classList.add('flag');
+              board[i][j].isFlagged = true;
+              // adjust score for mine flagged
+            }
+          },
+          { once: true }
+        );
 
         cell.appendChild(mineElem);
 
