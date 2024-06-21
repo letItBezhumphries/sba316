@@ -22,7 +22,17 @@ function getPercentage(num) {
   return percentage;
 }
 
-let easy = 1 / 8;
-let medium = 1 / 20;
-let hard = 1 / 30;
-console.log(getPercentage(hard));
+// let easy = 1 / 8;
+// let medium = 1 / 20;
+// let hard = 1 / 30;
+// console.log(getPercentage(hard));
+
+function getMineCount(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+function getRandomIndex(min, max) {
+  return Math.floor(
+    Math.random() * (Math.floor(max) - Math.ceil(min) + 1) + Math.ceil(min)
+  );
+}

@@ -1,12 +1,108 @@
 /**
-This function takes a number representing a row index, col number representing a column index, and a board
-and returns an array of tuples where each tuple represents the indices of an adjacent square that needs to be checked
+ *
+ */
+function createFormFragment() {
+  const fragment = document.createDocumentFragment();
+  const formContainer = fragment.appendChild(document.createElement('div'));
+  formContainer.style.width = '90%';
+  formContainer.style.height = '100%';
+  formContainer.style.display = 'flex';
+  formContainer.style.flexDirection = 'column';
+  formContainer.style.border = '.5px solid aqua';
+
+  const heading = document.createElement('h3');
+  heading.textContent = 'Sign in to track your score';
+  heading.className = 'signin-heading';
+
+  const formEl = document.createElement('form');
+  formEl.className = 'signin-form';
+
+  const usernameInputWrapper = document.createElement('div');
+  usernameInputWrapper.className = 'form-input-wrapper';
+  usernameInputWrapper.innerHTML = `<input type="text" name="username" id="name" required /><label for="username">Username</label>`;
+
+  const passwordInputWrapper = document.createElement('div');
+  passwordInputWrapper.className = 'form-input-wrapper';
+  passwordInputWrapper.innerHTML = `<input type="password" name="password" id="password" required /><label for="password">Password</label>`;
+
+  const submitBtn = document.createElement('input');
+  submitBtn.setAttribute('type', 'submit');
+  submitBtn.className = 'signin-submit-btn';
+
+  submitBtn.addEventListener('mouseover', (e) => {
+    submitBtn.style.backgroundColor = 'aqua';
+    submitBtn.style.color = 'black';
+  });
+
+  submitBtn.addEventListener('mouseleave', (e) => {
+    submitBtn.style.backgroundColor = 'black';
+    submitBtn.style.color = 'aqua';
+  });
+
+  submitBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+  });
+
+  formEl.appendChild(usernameInputWrapper);
+  formEl.appendChild(passwordInputWrapper);
+
+  formEl.appendChild(submitBtn);
+  formContainer.appendChild(heading);
+  formContainer.appendChild(formEl);
+  return fragment;
+}
+
+/**
+ *
+ * @param {Number} row
+ * @param {Number} col
+ * @param {Array or Arrays} board
+ * @returns
+ */
+function revealSquare(row, col, board) {
+  // basecase if there is a row or col that is out of bounds or a cell that has isRevealed set to true then do nothing
+  if (
+    row < 0 ||
+    row >= board.length ||
+    col < 0 ||
+    col >= board.length ||
+    board[row][col].isRevealed
+  ) {
+    return;
+  }
+
+  // if we get past the basecase then set the isRevealed property to true
+  board[row][col].isRevealed = true;
+
+  // check if the square is a mine and handle end game
+  if (board[row][col].isMine) {
+    // handle stop clock
+    // handle point totalling
+    // message user of game end
+    alert('Game Over, SAD FACE: You stepped on a mine!');
+    // log game score history in list
+  } else if (board[row][col].value === 0) {
+    // check if the square is next to a mine - meaning it has a value of zero
+    // handle revealing any adjacent squares that have a value of zero
+    // iterate over the adjacentSquares array
+    board[row][col].adjacentValues.forEach((tuple) => {
+      if (board[tuple[0]][tuple[1]].value === 0) {
+        revealSquare(tuple[0], tuple[1], board);
+      }
+    });
+  }
+  renderGameboard();
+}
+
+/**
+This function takes a number representing a row index, col index, and a board
+and returns an array of tuples where each tuple represents the indices of an adjacent square for the current square
  */
 /**
  * @param {number} row
  * @param {number} col
  * @param {Array of Arrays} board
- * @returns Array
+ * @returns Array of tuples in which each tuple consists of the row and col indices of an adjacent square
  */
 const traverseBoard = (row, col, board) => {
   const adjacentSquares = [];
@@ -54,7 +150,7 @@ const traverseBoard = (row, col, board) => {
  * @param {Number} matrix
  * @returns board (array) with adjacentValues added
  */
-function getAdjacentValues(board, matrix) {
+function getAdjacentPositions(board, matrix) {
   let newBoard = board;
   //iterate over the newBoard checking if each sqaure is a mine
   for (var r = 0; r < matrix; r++) {
@@ -106,7 +202,7 @@ function getRandomNum(min, max) {
 
 /**
  *
- * @param {Nested Array} board
+ * @param {Array} board
  * @param {Number} matrix
  * @param {Number} mines
  * @returns board
@@ -154,10 +250,9 @@ const initBoard = function (board, mineCount) {
     }
   }
 
-  // console.log('newBoard:', newBoard);
   initRandomMines(newBoard, matrix, mineCount);
 
-  return getAdjacentValues(newBoard, matrix);
+  return getAdjacentPositions(newBoard, matrix);
 };
 
 /**
@@ -175,28 +270,9 @@ const defaultSquare = {
   adjacentValues: [],
 };
 
-function getMineCount(min, max) {
-  return Math.floor(Math.random() * (max - min + 1) + min);
-}
-
-function getRandomIndex(min, max) {
-  return Math.floor(
-    Math.random() * (Math.floor(max) - Math.ceil(min) + 1) + Math.ceil(min)
-  );
-}
-
 function getPercentage(num) {
   let numStr = num.toString().split('.')[1].slice(0, 3);
   let percentage = numStr.slice(0, 2) + '.' + numStr[numStr.length - 1] + '%';
-
-  // if (parseInt(numStr[numStr.length - 1]) >= 5) {
-  //   // round up
-  //   numStr = num.toString().split('.')[1].slice(0, 2);
-  //   let number = parseInt(numStr) + 1;
-  //   percentage = number.toString() + '%';
-  // } else {
-  //   percentage = numStr.slice(0, 2) + '%';
-  // }
 
   if (percentage[0] === '0') {
     return percentage.slice(1);
@@ -222,10 +298,12 @@ const defaultGameboard = Array(defaultGameStatus.length).fill(
   Array(defaultGameStatus.length).fill(defaultSquare)
 );
 
+/* Initialize the gameboard */
 const board = initBoard(defaultGameboard, defaultGameStatus.mineCount);
 
 console.log('initialized gameboard:', board);
 
+/* Navigation styling */
 const navElem = document.getElementsByTagName('nav')[0];
 navElem.style.height = '20%';
 navElem.style.color = 'whitesmoke';
@@ -235,6 +313,7 @@ navElem.style.margin = '0 auto';
 navElem.style.justifyContent = 'center';
 navElem.style.alignItems = 'center';
 
+/* Heading styling */
 const headingElem = document.querySelector('nav h2');
 headingElem.style.height = '100%';
 headingElem.style.marginRight = '30px';
@@ -242,11 +321,25 @@ headingElem.style.width = '40%';
 headingElem.style.display = 'flex';
 headingElem.style.alignItems = 'center';
 
+/* Play button */
 const playBtn = document.querySelector('.play-btn');
-playBtn.style.height = '70%';
-playBtn.style.width = '30%';
+
 // create a function that will change the elements display property to none
 
+const loginBtn = document.createElement('input');
+loginBtn.setAttribute('type', 'button');
+loginBtn.setAttribute('value', 'Sign in');
+loginBtn.style.height = '50%';
+loginBtn.style.width = '20%';
+loginBtn.className = 'login-btn';
+loginBtn.addEventListener('click', (e) => {
+  let loginForm = createFormFragment();
+  appElem.appendChild(loginForm);
+});
+
+navElem.appendChild(loginBtn);
+
+/* App styling */
 const appElem = document.getElementById('app');
 appElem.style.display = 'flex';
 appElem.style.justifyContent = 'center';
@@ -265,52 +358,71 @@ clockElem.style.display = 'none';
 /**
  *
  */
-function renderTable() {
+function renderGameboard() {
+  // refresh the visual gameboard
+  appElem.innerHTML = '';
+  /* create the visual gameboard */
   const tbl = document.createElement('table');
-  tbl.style.width = '90%';
-  tbl.style.height = '90%';
+  // const tbl = document.createElement('div');
+  tbl.style.width = '60%';
+  tbl.style.height = '60%';
 
   const tblBody = document.createElement('tbody');
+  // const tblBody = document.createElement('div');
   tblBody.style.width = '100%';
   tblBody.style.height = '100%';
   tblBody.style.backgroundColor = 'white';
-  // creating all cells
+
+  // creating all Squares
   for (let i = 0; i < board.length; i++) {
-    // creates a table row
+    // creates a row
     const row = document.createElement('tr');
     row.style.width = '100%';
-
     row.style.height = `${getPercentage(1 / defaultGameStatus.length)}`;
-    row.style.backgroundColor = 'beige';
     row.style.display = 'flex';
 
     for (let j = 0; j < board[i].length; j++) {
+      // creating a square per column
       const cell = document.createElement('td');
-      cell.style.display = 'flex';
+      cell.className = 'square';
       cell.style.width = `${getPercentage(1 / defaultGameStatus.length)}`;
-      cell.style.justifyContent = 'center';
-      cell.style.alignItems = 'center';
-      // cell.style.backgroundColor = 'dodgerblue';
+
+      cell.addEventListener('click', (e) => {
+        e.preventDefault();
+        cell.classList.toggle('visible');
+        revealSquare(i, j, board);
+      });
 
       // grab the matching square
       const square = board[i][j];
 
       if (square.isMine) {
-        let mineSvg = document.createElement('svg');
-        mineSvg.classList.add('mine-icon');
-        let useElem = document.createElement('use');
-        useElem.setAttribute('xlinkHref', './images/sprites.svg#icon-bomb');
-        mineSvg.appendChild(useElem);
-        mineSvg.style.height = '20px';
-        mineSvg.style.width = '20px';
-        mineSvg.style.fill = 'red';
-        cell.append(mineSvg);
+        let mineElem = document.createElement('div');
+        mineElem.className = 'mine';
+
+        mineElem.addEventListener('dblclick', (e) => {
+          // make sure the square has an isRevealed property of false
+          // and an isMine property of true
+          if (board[i][j].isMine === true && board[i][j].isRevealed === false) {
+            let parent = e.target.parentNode;
+            parent.classList.toggle('visible');
+            e.target.classList.toggle('mine');
+            e.target.classList.add('flag');
+            board[i][j].isFlagged = true;
+            // adjust score for mine flagged
+          }
+        });
+
+        cell.appendChild(mineElem);
 
         // need to add an event listener to listen for a double click to turn a bomb into a flag
       } else {
         cell.innerText = square.value;
       }
 
+      if (square.isRevealed) {
+        cell.classList.toggle('visible');
+      }
       // console.log('this is the relative square for the cell:', square.isMine);
 
       row.appendChild(cell);
@@ -329,15 +441,26 @@ function renderTable() {
 }
 
 playBtn.addEventListener('mouseover', (e) => {
-  playBtn.style.backgroundColor = 'yellow';
-  playBtn.style.color = 'blue';
+  playBtn.style.backgroundColor = 'orangered';
+  playBtn.style.color = 'black';
+  playBtn.style.borderColor = 'orangered';
 });
 
 playBtn.addEventListener('mouseleave', (e) => {
-  playBtn.style.backgroundColor = 'red';
-  playBtn.style.color = 'black';
+  playBtn.style.backgroundColor = 'black';
+  playBtn.style.color = 'red';
+  playBtn.style.borderColor = 'red';
 });
 
+loginBtn.addEventListener('mouseover', (e) => {
+  loginBtn.style.backgroundColor = 'aqua';
+  loginBtn.style.color = 'black';
+});
+
+loginBtn.addEventListener('mouseleave', (e) => {
+  loginBtn.style.backgroundColor = 'black';
+  loginBtn.style.color = 'aqua';
+});
 // playBtn.addEventListener('click', (e) => {
 //   e.preventDefault();
 //   playBtn.style.display = 'none';
