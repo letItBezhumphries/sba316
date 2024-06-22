@@ -1,13 +1,12 @@
 /**
-This function takes y coordinate, col coordinate, and a board
-and returns an array of the adjacent squares based on the col and y 
-of a squares position
+This function takes a number representing a row index, col index, and a board
+and returns an array of tuples where each tuple represents the indices of an adjacent square for the current square
  */
 /**
  * @param {number} row
  * @param {number} col
  * @param {Array of Arrays} board
- * @returns Array
+ * @returns Array of tuples in which each tuple consists of the row and col indices of an adjacent square
  */
 const traverseBoard = (row, col, board) => {
   const adjacentSquares = [];
@@ -45,5 +44,3 @@ const traverseBoard = (row, col, board) => {
   }
   return adjacentSquares;
 };
-
-module.exports = traverseBoard;

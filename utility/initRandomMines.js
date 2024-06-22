@@ -12,7 +12,7 @@ function getRandomNum(min, max) {
 
 /**
  *
- * @param {Nested Array} board
+ * @param {Array} board
  * @param {Number} matrix
  * @param {Number} mines
  * @returns board
@@ -33,4 +33,7 @@ const initRandomMines = function (board, matrix, mines) {
   return board;
 };
 
-module.exports = initRandomMines;
+module.exports = {
+  getRandomNum,
+  initRandomMines,
+};

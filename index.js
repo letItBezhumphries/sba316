@@ -1,5 +1,5 @@
 /**
- *
+ * This function creates a DOM fragment and appends a signin form to the app
  */
 function createFormFragment(gameState) {
   const fragment = document.createDocumentFragment();
@@ -75,6 +75,63 @@ function createFormFragment(gameState) {
   formContainer.appendChild(formEl);
   fragment.appendChild(formContainer);
   return fragment;
+}
+
+function formatTime(mins, secs) {
+  return `${String(mins).padStart(2, '0')}:${secs.padStart(2, '0')}`;
+}
+
+function updateTimer() {
+  // store the gameclock element
+  const gameClockTimer = document.querySelector('.gameclock-container');
+  console.log('gameClockTimer:', gameClockTimer);
+  let mins = parseInt(gameClockTimer.firstChild.innerText);
+  let secs = parseInt(gameClockTimer.lastChild.innerText);
+
+  console.log('mins:', mins, 'secs:', secs);
+
+  if (mins === 0 && secs === 0) {
+    clearInterval(timer);
+    alert(
+      'Time has run out and the Mines have been detonated! Your Dead! Game Over!'
+    );
+    // handle scoring
+  }
+
+  if (secs > 0) {
+    secs--;
+  } else {
+    secs = 59;
+    mins--;
+  }
+
+  gameClockTimer.firstChild.textContent = `${mins}`;
+  gameClockTimer.lastChild.textContent = `${secs}`;
+}
+
+function startGameClock() {
+  let timer = setInterval(updateTimer, 1000);
+}
+
+/**
+ * This function create a document Fragment and returns the fragment so it can be redered to the app element
+ * @param {the defaultGameStatus Object} gameState
+ * @returns the DOM fragment with a timer that begins counting down
+ */
+function renderGameClock(gameState) {
+  // const fragment = document.createDocumentFragment();
+
+  const gameClockContainer = document.createElement('div');
+  gameClockContainer.className = 'gameclock-container';
+
+  let minutesString = gameState.time.split(':')[0];
+  let currentSecs = gameState.time.split(':')[1];
+  let minutesNum = parseInt(minutesString);
+
+  gameClockContainer.innerHTML = `<div class="mins">${minutesNum}</div><span>:</span><div class=""secs">${currentSecs}</div>`;
+  // fragment.appendChild(gameClockContainer);
+  appElem.appendChild(gameClockContainer);
+  // return fragment;
 }
 
 /**
@@ -311,7 +368,6 @@ const defaultGameStatus = {
   password: '',
   gameId: 0,
   length: 8,
-  // mineCount: 10, //dependant upon settings
   mineCount: 8,
   minesFlagged: 0,
   inGame: false,
@@ -359,15 +415,20 @@ const playBtn = document.createElement('input');
 playBtn.className = 'play-btn';
 playBtn.setAttribute('type', 'button');
 playBtn.setAttribute('value', 'Play');
+/* Event listener that renders the game board & renders the game timer  */
 playBtn.addEventListener(
   'click',
   (e) => {
+    // e.stopPropagation();
+    // renderGameboard();
+    // let gameClock = renderGameClock(defaultGameStatus);
+    // appElem.appendChild(gameClock);
+    // renderGameClock(defaultGameStatus);
     renderGameboard();
+    startGameClock();
   },
   { once: true }
 );
-
-// create a function that will change the elements display property to none
 
 /** login button */
 const loginBtn = document.createElement('input');
@@ -395,15 +456,7 @@ appElem.style.display = 'flex';
 appElem.style.justifyContent = 'center';
 appElem.style.alignItems = 'center';
 
-/* Clock Timer Element */
-const clockElem = document.createElement('div');
-// // minutes container
-const minutesElem = document.createElement('div');
-// function startTimer(timeString) {}
-minutesElem.textContent = `${defaultGameStatus.time.split(':')[0]} :`;
-const secondsElemn = document.createElement('div');
-clockElem.append(minutesElem, secondsElemn);
-clockElem.style.display = 'none';
+// /* Clock Timer Element */
 
 /**
  *
@@ -411,6 +464,8 @@ clockElem.style.display = 'none';
 function renderGameboard() {
   // refresh the visual gameboard
   appElem.innerHTML = '';
+  renderGameClock(defaultGameStatus);
+  // startGameClock();
   /* create the visual gameboard */
   const tbl = document.createElement('table');
   // const tbl = document.createElement('div');
@@ -475,8 +530,6 @@ function renderGameboard() {
         );
 
         cell.appendChild(mineElem);
-
-        // need to add an event listener to listen for a double click to turn a bomb into a flag
       } else {
         cell.innerText = square.value;
       }
@@ -484,7 +537,6 @@ function renderGameboard() {
       if (square.isRevealed) {
         cell.classList.toggle('visible');
       }
-      // console.log('this is the relative square for the cell:', square.isMine);
 
       row.appendChild(cell);
     }
@@ -522,7 +574,3 @@ loginBtn.addEventListener('mouseleave', (e) => {
   loginBtn.style.backgroundColor = 'black';
   loginBtn.style.color = 'aqua';
 });
-// playBtn.addEventListener('click', (e) => {
-//   e.preventDefault();
-//   playBtn.style.display = 'none';
-// });

@@ -31,6 +31,7 @@ body {
   width: 100%;
   height: 100%;
   display: flex;
+  flex-direction: column;
 }
 
 .play-btn {
@@ -209,4 +210,25 @@ body {
 .see-scores-btn:hover {
   background-color: aqua;
   color: black;
+}
+
+.gameclock-container {
+  background-color: black;
+  border: 0.8px solid red;
+  color: red;
+  margin-top: -10px;
+  margin-bottom: 30px;
+  width: 10%;
+  height: 10%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 30px;
+}
+
+.gameclock-container span {
+  color: red;
+  font-weight: 900;
+  margin-left: 5px;
+  margin-right: 5px;
 }

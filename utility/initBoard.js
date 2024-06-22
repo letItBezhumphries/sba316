@@ -1,6 +1,12 @@
 const initRandomMines = require('./initRandomMines');
 const getAdjacentValues = require('./getAdjacentValues');
 
+/**
+ *
+ * @param {Array of Arrays} board
+ * @param {Number} mineCount
+ * @returns
+ */
 const initBoard = function (board, mineCount) {
   let newBoard = [];
   let matrix = board.length;
@@ -22,10 +28,9 @@ const initBoard = function (board, mineCount) {
     }
   }
 
-  // console.log('newBoard:', newBoard);
   initRandomMines(newBoard, matrix, mineCount);
 
-  return getAdjacentValues(newBoard, matrix);
+  return getAdjacentPositions(newBoard, matrix);
 };
 
 const defaultSquare = {
