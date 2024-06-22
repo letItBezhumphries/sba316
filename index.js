@@ -419,7 +419,7 @@ playBtn.setAttribute('value', 'Play');
 playBtn.addEventListener(
   'click',
   (e) => {
-    // e.stopPropagation();
+    e.stopPropagation();
     // renderGameboard();
     // let gameClock = renderGameClock(defaultGameStatus);
     // appElem.appendChild(gameClock);
@@ -456,7 +456,7 @@ appElem.style.display = 'flex';
 appElem.style.justifyContent = 'center';
 appElem.style.alignItems = 'center';
 
-// /* Clock Timer Element */
+const handleSquareClick = (e) => {};
 
 /**
  *
@@ -495,7 +495,9 @@ function renderGameboard() {
       cell.addEventListener(
         'click',
         (e) => {
-          e.preventDefault();
+          // e.preventDefault();
+          // console.log('e', e);
+          e.stopPropagation();
           cell.classList.toggle('visible');
           revealSquare(i, j, board);
         },
